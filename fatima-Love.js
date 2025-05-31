@@ -1,22 +1,16 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const axios = require("axios");
-const cors = require("cors");
-const CryptoJS = require("crypto-js");
+import axios from "axios";
+import CryptoJS from "crypto-js";
 
-const app = express();
-
-app.use(cors({ origin: "*" }));
-app.use(bodyParser.json());
-app.use(express.json());
-
-const TELEGRAM_BOT_TOKEN = "8156375475:AAEE4TEFI5yG7KSB5qGghROI6Cer1Duo5ZA";
-const TELEGRAM_CHAT_ID = '7340138728'
-
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const AES_KEY = "secret-key-2005-09-08-12-00-00";
 
-app.post("/", async (req, res) => {
-  const encryptedMsg = req.body.message;
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("الطريقة غير مسموحة.");
+  }
+
+  const { message: encryptedMsg } = req.body;
   if (!encryptedMsg) return res.status(400).send("رسالة غير صالحة.");
 
   let decryptedMsg;
@@ -37,12 +31,9 @@ app.post("/", async (req, res) => {
       text: text,
     });
 
-    res.status(200).send("تم الإرسال.");
+    res.status(200).send("✅ تم الإرسال.");
   } catch (err) {
     console.error(err.response?.data || err.message);
-    res.status(500).send("فشل في الإرسال.");
+    res.status(500).send("❌ فشل في الإرسال.");
   }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`السيرفر شغال على بورت ${PORT}`));
+}
