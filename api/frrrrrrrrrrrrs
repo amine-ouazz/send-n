@@ -1,5 +1,0 @@
-ublic class Main {
-    public static void main(String[] args) {
-        System.out.println("مرحبا بك في عالم الجافا!");
-    }
-}
